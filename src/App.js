@@ -1,8 +1,14 @@
 import React, { Component } from "react";
 import './App.css';
-import broken_clouds from "./assets/broken_clouds.png"
-import clear_sky from "./assets/clear_sky.png"
-import few_clouds from "./assets/few_clouds.png"
+
+// Background Images Imports
+import overcast_clouds from "./assets/overcast_clouds.jpg";
+import clear_sky from "./assets/clear_sky.jpg";
+import broken_clouds from "./assets/broken_clouds.jpg";
+
+
+
+
 const API_KEY = "1e7621016802c50c28adea8425ac5d69";
 class App extends Component {
   state = {
@@ -32,42 +38,46 @@ class App extends Component {
           cityName: "",
           notFound: true,
           notSet: false,
-          main: data.weather[0].description
+          main: ""
         })
       }
       else {
         this.setState({
-          temp: (data.main.temp - 273).toFixed(2) + "°C",
+          temp: Math.ceil((data.main.temp - 273).toFixed(2)) + "°C",
           weather: data.weather[0].description,
           humidity: data.main.humidity + "%",
           cityName: input.value[0].toUpperCase() + input.value.substr(1),
           notFound: false,
-          notSet: false
+          notSet: false,
+          country: data.sys.country
         })
       }
-      console.log(data);
     }
 
   }
   render() {
     return (
-      <div className="app" >
-        <input placeholder="Enter name of city ex: Tunis" onKeyUp={this.showWeather} id="input" autoComplete="false" />
-        {!this.state.notFound && !this.state.notSet ?
-          <div className="weather">
-            <h1>{this.state.cityName}</h1>
-            <h2>{this.state.temp}</h2>
-            <p>{this.state.weather}</p>
-            <p>{this.state.humidity}</p>
-            <img src={
-              this.state.main === "clear sky" ? "./assets/clear_sky.png" :
-                this.state.main === "broken_clouds" ? broken_clouds : ""
+      <div className="app" style=
+        {this.state.weather === "overcast clouds" ? { backgroundImage: `url(${overcast_clouds})` } :
+          this.state.weather === "clear sky" ? { backgroundImage: `url(${clear_sky})` } :
+            this.state.weather === "broken clouds" ? { backgroundImage: `url(${broken_clouds})` } :
+              { backgroundImage: `url()` }
+        } >
 
-
-            }></img>
-          </div> : this.state.notFound && !this.state.notSet ? <div>Invalid City Name.</div> : ""
+        <input placeholder="Enter name of city ex: Tunis" onKeyUp={this.showWeather} id="input" autoComplete="off" />
+        {
+          !this.state.notFound && !this.state.notSet ?
+            <div className="weather">
+              <h1>{this.state.cityName}, {this.state.country}</h1>
+              <div className="temp">
+                <h2>{this.state.temp}</h2>
+              </div>
+              <div className="desc">
+                <p>{this.state.weather}</p>
+              </div>
+            </div> : this.state.notFound && !this.state.notSet ? <div>Invalid City Name.</div> : ""
         }
-      </div>
+      </ div >
     )
   }
 }
